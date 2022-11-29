@@ -39,5 +39,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            sokratis1988/app:latest
-            ghcr.io/sokratis1988/app:latest
+            sokratis1988/helm:latest
+            ghcr.io/sokratis1988/helm:latest
