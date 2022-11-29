@@ -11,16 +11,17 @@ ENV HELM=${HELM_VERSION}
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Upgrade OS
-RUN apk add -U -q --no-cache git
+RUN apk add -U -q --no-cache git curl wget
 RUN apk upgrade
 
 # Install helm
-RUN wget --quiet https://get.helm.sh/helm-v$HELM-linux-arm.tar.gz
-RUN tar -zxvf helm-v$HELM-linux-arm.tar.gz
-RUN mv linux-arm/helm /usr/local/bin/helm
-RUN rm -r linux-arm/ helm-v$HELM-linux-arm.tar.gz
+RUN wget --quiet https://get.helm.sh/helm-v$HELM-linux-amd64.tar.gz
+RUN tar -zxvf helm-v$HELM-linux-amd64.tar.gz
+RUN mv linux-amd64/helm /usr/bin/helm && chmod +x /usr/bin/helm
+RUN rm -r linux-amd64/ helm-v$HELM-linux-amd64.tar.gz
 
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
 
-CMD ["/bin/sh"]
+ENTRYPOINT [ "helm" ]
+CMD ["--help"]
