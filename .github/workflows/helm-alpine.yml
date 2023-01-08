@@ -40,6 +40,6 @@ jobs:
           push: true
           tags: |
             sokratis1988/helm:latest
-            sokratis1988/helm:3.10.2
+            sokratis1988/helm:3.10.3
             ghcr.io/sokratis1988/helm:latest
-            ghcr.io/sokratis1988/helm:3.10.2
+            ghcr.io/sokratis1988/helm:3.10.3
