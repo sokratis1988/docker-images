@@ -6,7 +6,7 @@ LABEL description="Docker image with helm tools for using in a CI/CD"
 LABEL src=https://github.com/sokratis1988/docker-images
 
 #ENV
-ARG HELM_VERSION=3.11.0
+ARG HELM_VERSION=3.11.3
 ENV HELM=${HELM_VERSION}
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
