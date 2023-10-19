@@ -6,8 +6,10 @@ LABEL description="Docker image with helm tools for using in a CI/CD"
 LABEL src=https://github.com/sokratis1988/docker-images
 
 #ENV
-ARG HELM_VERSION=3.12.1
+ARG HELM_VERSION=3.13.1
 ENV HELM=${HELM_VERSION}
+ARG KUBELOGIN_VERSION=0.0.32
+ENV KUBELOGIN=${KUBELOGIN_VERSION}
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Upgrade OS
@@ -19,6 +21,12 @@ RUN wget --quiet https://get.helm.sh/helm-v$HELM-linux-amd64.tar.gz
 RUN tar -zxvf helm-v$HELM-linux-amd64.tar.gz
 RUN mv linux-amd64/helm /usr/bin/helm && chmod +x /usr/bin/helm
 RUN rm -r linux-amd64/ helm-v$HELM-linux-amd64.tar.gz
+
+# Install kubelogin
+RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/v$KUBELOGIN/kubelogin-linux-amd64.zip
+RUN unzip kubelogin-linux-amd64.zip
+RUN mv bin/linux_amd64/kubelogin /usr/bin/kubelogin && chmod +x /usr/bin/kubelogin
+RUN rm -r bin/ kubelogin-linux-amd64.zip
 
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
