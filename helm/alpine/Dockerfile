@@ -25,8 +25,9 @@ RUN rm -r linux-amd64/ helm-v$HELM-linux-amd64.tar.gz
 # Install kubelogin
 RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/v$KUBELOGIN/kubelogin-linux-amd64.zip
 RUN unzip kubelogin-linux-amd64.zip
+RUN ls -la
 RUN mv bin/linux_amd64/kubelogin /usr/bin/kubelogin && chmod +x /usr/bin/kubelogin
-RUN rm -r bin/ kubelogin-linux-amd64.zip
+RUN rm -r bin/linux_amd64 kubelogin-linux-amd64.zip
 
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
