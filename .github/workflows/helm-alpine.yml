@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: helm/alpine/
-          file: {context}/Dockerfile
+          file: helm/alpine/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: helm/alpine/
-          file: {context}/Dockerfile-kubelogin
+          file: helm/alpine/Dockerfile-kubelogin
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
