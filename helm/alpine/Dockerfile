@@ -11,7 +11,7 @@ ENV HELM=${HELM_VERSION}
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Upgrade OS
-RUN apk add -U -q --no-cache git curl wget
+RUN apk add -U -q --no-cache git curl wget gettext
 RUN apk upgrade
 
 # Install helm
