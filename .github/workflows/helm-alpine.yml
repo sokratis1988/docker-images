@@ -4,11 +4,26 @@ on:
   push:
     branches:
       - "main"
+      - "dev"
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      -
+        name: Fetch Helm Versions
+        id: fetch-versions
+        run: |
+          chmod +x ./prepare.sh
+          VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
+          echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')"
+      -
+        name: Fetch Latest Helm Version
+        id: fetch-latest-version
+        run: |
+          chmod +x ./prepare.sh
+          VERSIONS=$(./prepare.sh --github-repo helm --github-project helm --latest)
+          echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')"
       -
         name: Checkout
         uses: actions/checkout@v3
@@ -40,10 +55,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            sokratis1988/helm:latest
-            sokratis1988/helm:3.13.1
-            ghcr.io/sokratis1988/helm:latest
-            ghcr.io/sokratis1988/helm:3.13.1
+            sokratis1988/helm:${{ matrix.version }}
+            ghcr.io/sokratis1988:${{ matrix.version }}
+          build-args: HELM_VERSION=${{ matrix.version }} BUILD_VERSION="00001"
       -
         name: Build and push
         uses: docker/build-push-action@v3
@@ -57,3 +71,7 @@ jobs:
             sokratis1988/helm:3.13.1-kubelogin
             ghcr.io/sokratis1988/helm:latest-kubelogin
             ghcr.io/sokratis1988/helm:3.13.1-kubelogin
+    strategy:
+      matrix:
+        version: ${{fromJson(steps.fetch-versions.outputs.versions)}}
+      fail-fast: false

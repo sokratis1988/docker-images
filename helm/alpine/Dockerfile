@@ -1,12 +1,14 @@
-FROM alpine:latest
+ARG IMAGE="alpine:latest"
+ARG BUILD_VERSION
+FROM ${IMAGE}
 
 LABEL org.opencontainers.image.authors="Sokratis Ioannidis"
-LABEL version="0.1"
+LABEL version=${BUILD_VERSION}
 LABEL description="Docker image with helm tools for using in a CI/CD"
 LABEL src=https://github.com/sokratis1988/docker-images
 
 #ENV
-ARG HELM_VERSION=3.13.1
+ARG HELM_VERSION
 ENV HELM=${HELM_VERSION}
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
