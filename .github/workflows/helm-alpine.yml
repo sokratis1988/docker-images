@@ -23,8 +23,8 @@ jobs:
           #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
           #echo "::set-output name=versions::$VERSIONS"
 
-      - name: Echo versions
-        run: python -c "import json; print(json.dumps(${{ toJson(steps.get-versions.outputs.versions) }}))"
+      #- name: Echo versions
+      #  run: python -c "import json; print(json.dumps(${{ toJson(steps.get-versions.outputs.versions) }}))"
 
 
   build:
