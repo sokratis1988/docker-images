@@ -17,10 +17,10 @@ RUN apk add -U -q --no-cache git curl wget gettext
 RUN apk upgrade
 
 # Install helm
-RUN wget --quiet https://get.helm.sh/helm-v$HELM-linux-amd64.tar.gz
-RUN tar -zxvf helm-v$HELM-linux-amd64.tar.gz
+RUN wget --quiet https://get.helm.sh/helm-$HELM-linux-amd64.tar.gz
+RUN tar -zxvf helm-$HELM-linux-amd64.tar.gz
 RUN mv linux-amd64/helm /usr/bin/helm && chmod +x /usr/bin/helm
-RUN rm -r linux-amd64/ helm-v$HELM-linux-amd64.tar.gz
+RUN rm -r linux-amd64/ helm-$HELM-linux-amd64.tar.gz
 
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
