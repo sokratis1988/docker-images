@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ${{fromJson(env.versions)}}
+        version: ${{fromJson(needs.get-versions.outputs.versions)}}
     steps:
       -
         name: Checkout
