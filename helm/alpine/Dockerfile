@@ -25,5 +25,8 @@ RUN rm -r linux-amd64/ helm-${HELM}-linux-amd64.tar.gz
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
 
+# Clean up
+RUN apk del --purge curl git wget gettext
+
 ENTRYPOINT [ "helm" ]
 CMD ["--help"]

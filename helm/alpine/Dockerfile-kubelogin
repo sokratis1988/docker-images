@@ -1,7 +1,9 @@
-FROM alpine:latest
+ARG IMAGE="alpine:latest"
+ARG BUILD_VERSION="0.1"
+FROM ${IMAGE}
 
 LABEL org.opencontainers.image.authors="Sokratis Ioannidis"
-LABEL version="0.1"
+LABEL version=${BUILD_VERSION}
 LABEL description="Docker image with helm tools for using in a CI/CD"
 LABEL src=https://github.com/sokratis1988/docker-images
 
@@ -31,6 +33,9 @@ RUN rm -r bin/linux_amd64 kubelogin-linux-amd64.zip
 
 # Install Plugins
 RUN helm plugin install https://github.com/chartmuseum/helm-push
+
+# Clean up
+RUN apk del --purge curl git wget gettext
 
 ENTRYPOINT [ "helm" ]
 CMD ["--help"]
