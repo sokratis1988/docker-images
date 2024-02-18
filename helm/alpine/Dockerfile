@@ -1,5 +1,5 @@
 ARG IMAGE="alpine:latest"
-ARG BUILD_VERSION="1"
+ARG BUILD_VERSION="0.1"
 FROM ${IMAGE}
 
 LABEL org.opencontainers.image.authors="Sokratis Ioannidis"
