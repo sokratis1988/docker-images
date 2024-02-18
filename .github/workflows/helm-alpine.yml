@@ -20,9 +20,9 @@ jobs:
           chmod +x ./prepare.sh
           VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
           echo "versions=$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
-          echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')"
-          echo $VERSIONS
+          echo "GITHUB_OUTPUT: " $GITHUB_OUTPUT
+          #echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')"
+          #echo $VERSIONS
 
 
   build:
