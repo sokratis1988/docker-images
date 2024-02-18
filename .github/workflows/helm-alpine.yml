@@ -62,7 +62,7 @@ jobs:
           push: true
           tags: |
             sokratis1988/helm:${{ matrix.version }}
-            ghcr.io/sokratis1988:${{ matrix.version }}
+            #ghcr.io/sokratis1988:${{ matrix.version }}
           build-args: |
             "HELM_VERSION=${{ matrix.version }}"
             "BUILD_VERSION=00001"
