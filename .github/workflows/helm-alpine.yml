@@ -10,29 +10,41 @@ jobs:
   get-versions:
     runs-on: ubuntu-latest
     outputs:
-      helm-versions: ${{ steps.get-helm-releases.outputs.versions }}
+      helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
+      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Get helm releases
         id: get-helm-releases
         run: |
-          #echo "::set-output name=versions::[\"v3.14.1\", \"v3.14.0\"]"
           chmod +x ./prepare.sh
           VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
           #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
-          echo "::set-output name=versions::$VERSIONS"
+          echo "::set-output name=helm-versions::$VERSIONS"
+
+      - name: Get helm releases
+        id: get-helm-push-releases
+        run: |
+          chmod +x ./prepare.sh
+          VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push)
+          echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
+          #echo "::set-output name=helm-push-versions::$VERSIONS"
 
   build:
     needs: get-versions
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
+        helm-version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
+        helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
     steps:
       -
         name: Checkout
         uses: actions/checkout@v3
+      -
+        name: Prepare Helm Version
+        run: echo "HELM_VERSION=${{ matrix.helm-version }}" | sed 's/v//g' > $GITHUB_ENV
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -61,10 +73,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            sokratis1988/helm:${{ matrix.version }}
-            ghcr.io/sokratis1988:${{ matrix.version }}
+            sokratis1988/helm:${{ env.HELM_VERSION }}
           build-args: |
-            "HELM_VERSION=${{ matrix.version }}"
+            "HELM_VERSION=${{ matrix.helm-version }}"
             "BUILD_VERSION=00001"
       # -
       #   name: Build and push
