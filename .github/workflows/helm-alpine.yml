@@ -17,13 +17,14 @@ jobs:
       - name: Get release versions
         id: get-versions
         run: |
-          chmod +x ./prepare.sh
-          VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
+          echo "::set-output name=versions::[\"v3.14.1\", \"v3.14.0\"]"
+          #chmod +x ./prepare.sh
+          #VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
           #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
-          echo "::set-output name=versions::$VERSIONS"
+          #echo "::set-output name=versions::$VERSIONS"
 
       - name: Echo versions
-        run: echo ${{ fromJson(steps.get-versions.outputs.versions) }}
+        run: python -c "import json; print(json.dumps(${{ toJson(steps.get-versions.outputs.versions) }}))"
 
 
   build:
