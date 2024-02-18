@@ -23,7 +23,7 @@ jobs:
           echo "::set-output name=versions::$VERSIONS"
 
       - name: Echo versions
-        run: echo "${{ steps.get-versions.outputs.versions }}"
+        run: echo ${{ fromJson(steps.get-versions.outputs.versions) }}
 
 
   build:
