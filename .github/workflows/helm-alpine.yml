@@ -10,12 +10,12 @@ jobs:
   get-versions:
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.get-versions.outputs.versions }}
+      helm-versions: ${{ steps.get-helm-releases.outputs.versions }}
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get release versions
-        id: get-versions
+      - name: Get helm releases
+        id: get-helm-releases
         run: |
           #echo "::set-output name=versions::[\"v3.14.1\", \"v3.14.0\"]"
           chmod +x ./prepare.sh
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ${{ fromJson(needs.get-versions.outputs.versions) }}
+        version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
     steps:
       -
         name: Checkout
@@ -62,20 +62,21 @@ jobs:
           push: true
           tags: |
             sokratis1988/helm:${{ matrix.version }}
+            ghcr.io/sokratis1988:${{ matrix.version }}
           build-args: |
             "HELM_VERSION=${{ matrix.version }}"
             "BUILD_VERSION=00001"
-      -
-        name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: helm/alpine/
-          file: helm/alpine/Dockerfile-kubelogin
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            sokratis1988/helm:latest-kubelogin
-            sokratis1988/helm:3.13.1-kubelogin
-            ghcr.io/sokratis1988/helm:latest-kubelogin
-            ghcr.io/sokratis1988/helm:3.13.1-kubelogin
+      # -
+      #   name: Build and push
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: helm/alpine/
+      #     file: helm/alpine/Dockerfile-kubelogin
+      #     platforms: linux/amd64,linux/arm64
+      #     push: true
+      #     tags: |
+      #       sokratis1988/helm:latest-kubelogin
+      #       sokratis1988/helm:3.13.1-kubelogin
+      #       ghcr.io/sokratis1988/helm:latest-kubelogin
+      #       ghcr.io/sokratis1988/helm:3.13.1-kubelogin
     
