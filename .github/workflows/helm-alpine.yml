@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
-      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
+      #helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
     steps:
       - uses: actions/checkout@v3
 
@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         helm-version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
-        helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
+        #helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
     steps:
       -
         name: Checkout
