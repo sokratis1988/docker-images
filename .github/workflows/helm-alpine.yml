@@ -77,18 +77,17 @@ jobs:
             ghcr.io/sokratis1988/helm:${{ env.HELM_VERSION }}
           build-args: |
             "HELM_VERSION=${{ matrix.helm-version }}"
-            "BUILD_VERSION=00001"
-      # -
-      #   name: Build and push
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #     context: helm/alpine/
-      #     file: helm/alpine/Dockerfile-kubelogin
-      #     platforms: linux/amd64,linux/arm64
-      #     push: true
-      #     tags: |
-      #       sokratis1988/helm:latest-kubelogin
-      #       sokratis1988/helm:3.13.1-kubelogin
-      #       ghcr.io/sokratis1988/helm:latest-kubelogin
-      #       ghcr.io/sokratis1988/helm:3.13.1-kubelogin
+      -
+        name: Build and push with kubelogin
+        uses: docker/build-push-action@v3
+        with:
+          context: helm/alpine/
+          file: helm/alpine/Dockerfile-kubelogin
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
+            ghcr.io/sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
+          build_args: |
+            "HELM_VERSION=${{ matrix.helm-version }}"
     
