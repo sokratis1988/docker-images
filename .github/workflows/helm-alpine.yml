@@ -20,15 +20,15 @@ jobs:
         run: |
           chmod +x ./prepare.sh
           VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
-          #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
-          echo "::set-output name=helm-versions::$VERSIONS"
+          echo "helm-versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
+          #echo "::set-output name=helm-versions::$VERSIONS"
 
-      - name: Get helm releases
+      - name: Get helm-push releases
         id: get-helm-push-releases
         run: |
           chmod +x ./prepare.sh
           VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push)
-          echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
+          echo "helm-push-versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
           #echo "::set-output name=helm-push-versions::$VERSIONS"
 
   build:
