@@ -19,17 +19,17 @@ jobs:
         id: get-helm-releases
         run: |
           chmod +x ./prepare.sh
-          VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
-          echo "helm-versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
-          #echo "::set-output name=helm-versions::$VERSIONS"
+          HELM-VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
+          echo "helm-versions=$(echo \"$HELM-VERSIONS\")" >> $GITHUB_OUTPUT
+          #echo "::set-output name=helm-versions::$HELM-VERSIONS"
 
       - name: Get helm-push releases
         id: get-helm-push-releases
         run: |
           chmod +x ./prepare.sh
-          VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push)
-          echo "helm-push-versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
-          #echo "::set-output name=helm-push-versions::$VERSIONS"
+          PUSH-VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push)
+          echo "helm-push-versions=$(echo \"$PUSH-VERSIONS\")" >> $GITHUB_OUTPUT
+          #echo "::set-output name=helm-push-versions::$PUSH-VERSIONS"
 
   build:
     needs: get-versions
