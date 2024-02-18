@@ -19,8 +19,8 @@ jobs:
         run: |
           chmod +x ./prepare.sh
           VERSIONS=$(./prepare.sh --github-repo helm --github-project helm)
-          #echo "versions=$(echo \"$VERSIONS\" | jq -R -s 'split(\" \") | map(select(. != \"\"))')" >> $GITHUB_OUTPUT
-          echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s 'split(\" \") | map(select(. != \"\"))')"
+          #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
+          echo "::set-output name=versions::$VERSIONS"
 
       - name: Echo versions
         run: echo "${{ steps.get-versions.outputs.versions }}"

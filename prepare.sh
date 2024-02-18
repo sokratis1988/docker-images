@@ -41,6 +41,21 @@ function get_releases() {
     echo $releases
 }
 
+function get_json_releases() {
+    JQ_FILTER='map(.tag_name)'
+    JQ_FILTER_LATEST='[.tag_name]'
+    if [[ $ERC == true ]]; then
+        JQ_FILTER='map(select(.tag_name | test("-rc\\.\\d+$") | not))'
+    fi
+    if [[ $LATEST == true ]]; then
+      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases/latest" | jq -r "$JQ_FILTER_LATEST")
+    else
+      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases" | jq -r "$JQ_FILTER")
+    fi
+
+    echo $releases
+}
+
 
 # Init variables
 GITHUB_API=${GITHUB_API:-"https://api.github.com"}
@@ -109,4 +124,5 @@ log_info "- release candidates   (--exclude-release-candidates)   : \\e[33;1m${E
 log_info "- latest               (--latest)                       : \\e[33;1m${LATEST:-false}\\e[0m"
 log_info "- insecure             (--insecure)                     : \\e[33;1m${INSECURE:-false}\\e[0m"
 
-get_releases
+#get_releases
+get_json_releases
