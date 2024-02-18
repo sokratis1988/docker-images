@@ -23,10 +23,6 @@ jobs:
           #echo "versions=$(echo \"$VERSIONS\")" >> $GITHUB_OUTPUT
           echo "::set-output name=versions::$VERSIONS"
 
-      #- name: Echo versions
-      #  run: python -c "import json; print(json.dumps(${{ toJson(steps.get-versions.outputs.versions) }}))"
-
-
   build:
     needs: get-versions
     runs-on: ubuntu-latest
@@ -69,7 +65,7 @@ jobs:
             ghcr.io/sokratis1988:${{ matrix.version }}
           build-args: |
             "HELM_VERSION=${{ matrix.version }}"
-            "BUILD_VERSION="00001"
+            "BUILD_VERSION=00001"
       -
         name: Build and push
         uses: docker/build-push-action@v3
