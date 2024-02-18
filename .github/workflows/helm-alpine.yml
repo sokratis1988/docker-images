@@ -88,6 +88,6 @@ jobs:
           tags: |
             sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
             ghcr.io/sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
-          build_args: |
+          build-args: |
             "HELM_VERSION=${{ matrix.helm-version }}"
     
