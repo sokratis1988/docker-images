@@ -22,6 +22,9 @@ jobs:
           #echo "versions=$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           echo "::set-output name=versions::$(echo \"$VERSIONS\" | jq -R -s -c 'split("\n")[:-1]')"
 
+      - name: Echo versions
+        run: echo "${{ steps.get-versions.outputs.versions }}"
+
 
   build:
     needs: get-versions
