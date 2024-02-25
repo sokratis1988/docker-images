@@ -45,7 +45,8 @@ function get_json_releases() {
     JQ_FILTER='map(.tag_name)'
     JQ_FILTER_LATEST='[.tag_name]'
     if [[ $ERC == true ]]; then
-        JQ_FILTER='map(select(.tag_name | test("-rc\\.\\d+$") | not))'
+        #JQ_FILTER='map(select(.tag_name | test("-rc\\.\\d+$") | not))'
+        JQ_FILTER='map(select(.tag_name | test("-(rc|b)[0-9]*\\.?[0-9]*$|rc[0-9]*\\.?[0-9]*$|b[0-9]*\\.?[0-9]*$") | not)) | .[] | .tag_name'
     fi
     if [[ $LATEST == true ]]; then
       releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases/latest" | jq -r "$JQ_FILTER_LATEST")
