@@ -20,7 +20,7 @@ jobs:
         id: get-releases
         run: |
           chmod +x ./prepare.sh
-          ANSIBLE_VERSIONS=$(./prepare.sh --pypi-project ansible)
+          ANSIBLE_VERSIONS=$(./prepare.sh --pypi-project ansible --exclude-release-candidates)
           #echo "ansible-versions=$(echo \"$ansible-versions\")" >> $GITHUB_OUTPUT
           echo "::set-output name=ansible-versions::$ANSIBLE_VERSIONS"
 
