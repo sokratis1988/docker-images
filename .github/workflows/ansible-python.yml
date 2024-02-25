@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ansible-version: ${{ fromJson(needs.get-versions.outputs.ansible-versions) }}
+        ansible-version: ${{ needs.get-versions.outputs.ansible-versions }}
     steps:
       -
         name: Checkout
