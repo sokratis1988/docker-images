@@ -20,7 +20,7 @@ jobs:
         id: get-releases
         run: |
           chmod +x ./prepare.sh
-          ANSIBLE_VERSIONS=$(./prepare.sh --pypi-project ansible --latest)
+          ANSIBLE_VERSIONS=$(./prepare.sh --pypi-project ansible)
           #echo "ansible-versions=$(echo \"$ansible-versions\")" >> $GITHUB_OUTPUT
           echo "::set-output name=ansible-versions::$ANSIBLE_VERSIONS"
 
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ansible-version: ${{ needs.get-versions.outputs.ansible-versions }}
+        ansible-version: ${{ fromJson(needs.get-versions.outputs.ansible-versions) }}
     steps:
       -
         name: Checkout
