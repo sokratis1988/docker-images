@@ -44,10 +44,8 @@ function get_json_releases() {
 }
 
 function get_from_pypi() {
-  # curl https://pypi.org/pypi/ansible/json | jq '."releases" | keys | .[]'
-  # Latest: curl https://pypi.org/pypi/ansible/json | jq '.info.version'
-  JQ_FILTER='."releases" | keys | .[]'
-  JQ_FILTER_LATEST='.info.version'
+  JQ_FILTER='[."releases" | keys[]]'
+  JQ_FILTER_LATEST='["\( .info.version )"]'
   if [[ $ERC == true ]]; then
       JQ_FILTER='."releases" | keys | map(select(test("^(?!.*(?:rc|a|b)[0-9]+$).*"))) | .[]'
   fi
