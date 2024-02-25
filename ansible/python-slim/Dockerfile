@@ -19,6 +19,7 @@ RUN apt-get update && \
         openssh-client && \
     pip install --upgrade pip cffi && \
     pip install ansible==${ANSIBLE} && \
+    pip install ansible-lint && \
     apt-get remove -y --purge --auto-remove gcc libffi-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /root/.cache
