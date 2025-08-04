@@ -35,8 +35,8 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: httpstatuses/alpine/
-          file: httpstatuses/alpine/Dockerfile
+          context: outline-keycloak/
+          file: outline-keycloak/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
