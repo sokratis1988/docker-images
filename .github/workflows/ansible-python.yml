@@ -1,4 +1,4 @@
-name: ci
+name: ansible-python
 
 on:
   push:
