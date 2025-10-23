@@ -29,17 +29,20 @@ jobs:
               --per-page 100 \
               --exclude-release-candidates \
               --exclude-alpha \
-            | jq -c 'map(select(startswith("v3.")))'
+            | jq -c 'map(select(startswith("v3.")))'   # <- kompaktes JSON, eine Zeile
           )
-          echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
+          echo "helm-versions=${HELM_VERSIONS}" >> "$GITHUB_OUTPUT"
 
 
       - name: Get helm-push releases
         id: get-helm-push-releases
         run: |
           chmod +x ./prepare.sh
-          PUSH_VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push --per-page 30)
-          echo "helm-push-versions=$PUSH_VERSIONS" >> "$GITHUB_OUTPUT"
+          PUSH_VERSIONS=$(
+            ./prepare.sh --github-repo chartmuseum --github-project helm-push --per-page 30 \
+            | jq -c '.'
+          )
+          echo "helm-push-versions=${PUSH_VERSIONS}" >> "$GITHUB_OUTPUT"
 
   build:
     needs: get-versions
