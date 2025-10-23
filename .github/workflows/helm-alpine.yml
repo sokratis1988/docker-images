@@ -21,7 +21,9 @@ jobs:
       - name: Get helm releases
         id: get-helm-releases
         run: |
+          set -e
           chmod +x ./prepare.sh
+
           HELM_VERSIONS=$(
             ./prepare.sh \
               --github-repo helm \
@@ -29,9 +31,32 @@ jobs:
               --per-page 100 \
               --exclude-release-candidates \
               --exclude-alpha \
-            | jq -c 'map(select(startswith("v3.")))'   # <- kompaktes JSON, eine Zeile
+            | jq -c 'map(select(test("^v3\\.[0-9]+\\.[0-9]+$")))'
           )
-          echo "helm-versions=${HELM_VERSIONS}" >> "$GITHUB_OUTPUT"
+
+          COUNT="$(jq 'length' <<< "$HELM_VERSIONS")"
+
+          echo "::group::Debug: Helm versions (count=$COUNT)"
+          echo "$HELM_VERSIONS" | jq -r '.[]' || true
+          echo "::endgroup::"
+
+          {
+            echo "### Helm versions"
+            echo ""
+            echo "- **Count:** $COUNT"
+            echo ""
+            echo "```"
+            echo "$HELM_VERSIONS" | jq -r '.[]'
+            echo "```"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # 4) Optional: früh abbrechen, wenn leer (hilft bei stillen Fehlern)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error title=No versions found::Die gefilterte Versionen-Liste ist leer."
+            exit 1
+          fi
+
+          echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
 
 
       - name: Get helm-push releases
