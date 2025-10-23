@@ -50,9 +50,11 @@ jobs:
       #     echo "::set-output name=helm-push-versions::$PUSH_VERSIONS"
 
   build:
+    if: startsWith(matrix.helm-version, 'v3.')
     needs: get-versions
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         helm-version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
         #helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
