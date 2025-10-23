@@ -30,7 +30,7 @@ jobs:
         id: get-helm-releases
         run: |
           chmod +x ./prepare.sh
-          HELM_VERSIONS=$(./prepare.sh --github-repo helm --github-project helm --per-page 30)
+          HELM_VERSIONS=$(./prepare.sh --github-repo helm --github-project helm --per-page 100 --exclude-release-candidates | jq -c '[.[] | select(startswith("v3."))]')
           echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
 
 
@@ -50,7 +50,6 @@ jobs:
       #     echo "::set-output name=helm-push-versions::$PUSH_VERSIONS"
 
   build:
-    if: startsWith(matrix.helm-version, 'v3.')
     needs: get-versions
     runs-on: ubuntu-latest
     strategy:
