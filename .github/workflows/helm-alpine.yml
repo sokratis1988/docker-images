@@ -10,11 +10,11 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  get-versions:
+    get-versions:
     runs-on: ubuntu-latest
     outputs:
       helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
-      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}  # <— nur wenn du ihn nutzt
+      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,50 +32,23 @@ jobs:
               --exclude-alpha \
             | jq -c 'map(select(test("^v3\\.[0-9]+\\.[0-9]+$")))'
           )
-          COUNT="$(jq 'length' <<<"$HELM_VERSIONS")"
-
-          echo "::group::Helm versions (count=${COUNT})"
-          jq -r '.[]' <<<"$HELM_VERSIONS" || true
-          echo "::endgroup::"
-
-          {
-            printf '### Helm versions\n\n'
-            printf -- '- **Count:** %s\n\n' "$COUNT"
-            printf '```\n'
-            jq -r '.[]' <<<"$HELM_VERSIONS"
-            printf '```\n'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "$COUNT" -eq 0 ]; then
-            echo "::error title=No versions found::Gefilterte Liste ist leer."
-            exit 1
-          fi
-
           echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
 
-      # Falls du helm-push NICHT brauchst, diesen Step entfernen/auskommentieren.
-      - name: Get helm-push releases
+      - name: Get helm-push releases (latest only)
         id: get-helm-push-releases
         run: |
           set -euo pipefail
           chmod +x ./prepare.sh
-          PUSH_VERSIONS=$(
+          PUSH_LATEST=$(
             ./prepare.sh \
               --github-repo chartmuseum \
               --github-project helm-push \
-              --per-page 30 \
-              --exclude-release-candidates \
-              --exclude-alpha \
+              --latest \
             | jq -c '.'
           )
-          COUNT="$(jq 'length' <<<"$PUSH_VERSIONS")"
+          # ergibt z.B. ["v0.11.3"]
+          echo "helm-push-versions=$PUSH_LATEST" >> "$GITHUB_OUTPUT"
 
-          echo "::group::helm-push versions (count=${COUNT})"
-          jq -r '.[]' <<<"$PUSH_VERSIONS" || true
-          echo "::endgroup::"
-
-          # WICHTIG: richtiger Output-Key!
-          echo "helm-push-versions=$PUSH_VERSIONS" >> "$GITHUB_OUTPUT"
 
   build:
     needs: get-versions
