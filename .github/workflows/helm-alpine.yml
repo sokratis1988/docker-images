@@ -14,23 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
-      #helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
+      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
     steps:
       - uses: actions/checkout@v3
-
-      # - name: Get helm releases
-      #   id: get-helm-releases
-      #   run: |
-      #     chmod +x ./prepare.sh
-      #     HELM_VERSIONS=$(./prepare.sh --github-repo helm --github-project helm --per-page 30)
-      #     #echo "helm-versions=$(echo \"$HELM-VERSIONS\")" >> $GITHUB_OUTPUT
-      #     echo "::set-output name=helm-versions::$HELM_VERSIONS"
 
       - name: Get helm releases
         id: get-helm-releases
         run: |
           chmod +x ./prepare.sh
-          HELM_VERSIONS=$(./prepare.sh --github-repo helm --github-project helm --per-page 100 --exclude-release-candidates | jq -c '[.[] | select(startswith("v3."))]')
+          HELM_VERSIONS=$(
+            ./prepare.sh \
+              --github-repo helm \
+              --github-project helm \
+              --per-page 100 \
+              --exclude-release-candidates \
+              --exclude-alpha \
+            | jq -c 'map(select(startswith("v3.")))'
+          )
           echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
 
 
@@ -39,15 +39,7 @@ jobs:
         run: |
           chmod +x ./prepare.sh
           PUSH_VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push --per-page 30)
-          echo "helm-versions=$PUSH_VERSIONS" >> "$GITHUB_OUTPUT"
-
-      # - name: Get helm-push releases
-      #   id: get-helm-push-releases
-      #   run: |
-      #     chmod +x ./prepare.sh
-      #     PUSH_VERSIONS=$(./prepare.sh --github-repo chartmuseum --github-project helm-push --per-page 30)
-      #     #echo "helm-push-versions=$(echo \"$PUSH-VERSIONS\")" >> $GITHUB_OUTPUT
-      #     echo "::set-output name=helm-push-versions::$PUSH_VERSIONS"
+          echo "helm-push-versions=$PUSH_VERSIONS" >> "$GITHUB_OUTPUT"
 
   build:
     needs: get-versions
@@ -56,7 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         helm-version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
-        #helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
+        helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
     steps:
       -
         name: Checkout
