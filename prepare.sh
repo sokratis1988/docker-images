@@ -27,23 +27,22 @@ function assert_argument() {
 }
 
 function get_json_releases() {
-    # Basis: Tag-Namen als Array
     JQ_FILTER='map(.tag_name)'
-    JQ_FILTER_LATEST='[.tag_name]'
-
-    # ERC: rc* ausblenden
     if [[ $ERC == true ]]; then
         JQ_FILTER+=' | map(select(test("(^|[.-])rc[0-9]*([.][0-9]+)*$") | not))'
     fi
-
     if [[ $EAC == true ]]; then
         JQ_FILTER+=' | map(select(test("(^|[.-])(alpha|beta)[0-9]*([.][0-9]+)*$") | not))'
     fi
 
+    JQ_FILTER_LATEST='[.tag_name]'
+
     if [[ $LATEST == true ]]; then
-      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases/latest" | jq -r "$JQ_FILTER_LATEST")
+      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases/latest" \
+        | jq -r "$JQ_FILTER_LATEST")
     else
-      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases?per_page=$PER_PAGE" | jq -r "$JQ_FILTER")
+      releases=$(curl ${INSECURE:+-k} -s "$GITHUB_API/repos/$GITHUB_REPO/$GITHUB_PROJECT/releases?per_page=$PER_PAGE" \
+        | jq -r "$JQ_FILTER")
     fi
 
     echo "$releases"
