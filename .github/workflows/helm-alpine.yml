@@ -5,49 +5,48 @@ on:
     branches:
       - "main"
       - "dev"
-  schedule: 
-    - cron: '0 0 * * *'
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch: {}
 
 jobs:
   get-versions:
-  runs-on: ubuntu-latest
-  outputs:
-    helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
-    helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
-  steps:
-    - uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    outputs:
+      helm-versions: ${{ steps.get-helm-releases.outputs.helm-versions }}
+      helm-push-versions: ${{ steps.get-helm-push-releases.outputs.helm-push-versions }}
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Get helm releases
-      id: get-helm-releases
-      run: |
-        set -euo pipefail
-        chmod +x ./prepare.sh
-        HELM_VERSIONS=$(
-          ./prepare.sh \
-            --github-repo helm \
-            --github-project helm \
-            --per-page 100 \
-            --exclude-release-candidates \
-            --exclude-alpha \
-          | jq -c 'map(select(test("^v3\\.[0-9]+\\.[0-9]+$")))'
-        )
-        echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
+      - name: Get helm releases
+        id: get-helm-releases
+        run: |
+          set -euo pipefail
+          chmod +x ./prepare.sh
+          HELM_VERSIONS=$(
+            ./prepare.sh \
+              --github-repo helm \
+              --github-project helm \
+              --per-page 100 \
+              --exclude-release-candidates \
+              --exclude-alpha \
+            | jq -c 'map(select(test("^v3\\.[0-9]+\\.[0-9]+$")))'
+          )
+          echo "helm-versions=$HELM_VERSIONS" >> "$GITHUB_OUTPUT"
 
-    - name: Get helm-push releases (latest only)
-      id: get-helm-push-releases
-      run: |
-        set -euo pipefail
-        chmod +x ./prepare.sh
-        PUSH_LATEST=$(
-          ./prepare.sh \
-            --github-repo chartmuseum \
-            --github-project helm-push \
-            --latest \
-          | jq -c '.'
-        )
-        # ergibt z.B. ["v0.11.3"]
-        echo "helm-push-versions=$PUSH_LATEST" >> "$GITHUB_OUTPUT"
+      - name: Get helm-push releases (latest only)
+        id: get-helm-push-releases
+        run: |
+          set -euo pipefail
+          chmod +x ./prepare.sh
+          PUSH_LATEST=$(
+            ./prepare.sh \
+              --github-repo chartmuseum \
+              --github-project helm-push \
+              --latest \
+            | jq -c '.'
+          )
+          echo "helm-push-versions=$PUSH_LATEST" >> "$GITHUB_OUTPUT"
 
   build:
     needs: get-versions
@@ -58,33 +57,34 @@ jobs:
         helm-version: ${{ fromJson(needs.get-versions.outputs.helm-versions) }}
         helm-push-version: ${{ fromJson(needs.get-versions.outputs.helm-push-versions) }}
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Prepare Helm Version
-        run: echo "HELM_VERSION=${{ matrix.helm-version }}" | sed 's/v//g' > $GITHUB_ENV
-      -
-        name: Set up QEMU
+
+      - name: Prepare Helm Version
+        run: |
+          CLEANED="$(echo '${{ matrix.helm-version }}' | sed 's/^v//')"
+          echo "HELM_VERSION=$CLEANED" >> "$GITHUB_ENV"
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Login to GitHub Container Registry
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: helm/alpine/
@@ -95,9 +95,9 @@ jobs:
             sokratis1988/helm:${{ env.HELM_VERSION }}
             ghcr.io/sokratis1988/helm:${{ env.HELM_VERSION }}
           build-args: |
-            "HELM_VERSION=${{ matrix.helm-version }}"
-      -
-        name: Build and push with kubelogin
+            HELM_VERSION=${{ matrix.helm-version }}
+
+      - name: Build and push with kubelogin
         uses: docker/build-push-action@v6
         with:
           context: helm/alpine/
@@ -108,5 +108,4 @@ jobs:
             sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
             ghcr.io/sokratis1988/helm:${{ env.HELM_VERSION }}-kubelogin
           build-args: |
-            "HELM_VERSION=${{ matrix.helm-version }}"
-    
+            HELM_VERSION=${{ matrix.helm-version }}
