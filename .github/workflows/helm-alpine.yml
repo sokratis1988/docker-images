@@ -29,7 +29,20 @@ jobs:
               --per-page 100 \
               --exclude-release-candidates \
               --exclude-alpha \
-            | jq -c 'map(select(startswith("v3.")))'   # <- kompaktes JSON, eine Zeile
+            | jq -c '
+                # nur stabile v3 SemVer
+                map(select(test("^v3\\.[0-9]+\\.[0-9]+$"))) 
+                # parse zu Zahlen-Teilen
+                | map({v: ., parts: (.[1:] | split(".") | map(tonumber))})
+                # nach Major.Minor.Patch sortieren
+                | sort_by(.parts)
+                # nach Minor gruppieren (parts[1] == Minor)
+                | group_by(.parts[1])
+                # pro Gruppe den letzten (=höchsten Patch) nehmen
+                | map(last.v)
+                # am Ende absteigend sortieren (neueste zuerst)
+                | sort_by(.[1:] | split(".") | map(tonumber)) | reverse
+              '
           )
           echo "helm-versions=${HELM_VERSIONS}" >> "$GITHUB_OUTPUT"
 
