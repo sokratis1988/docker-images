@@ -14,6 +14,7 @@ RUN wget --quiet https://get.helm.sh/helm-${HELM_VERSION}-${TARGETOS}-${TARGETAR
     && chmod +x /usr/bin/helm \
     && rm -rf ${TARGETOS}-${TARGETARCH} helm-${HELM_VERSION}-${TARGETOS}-${TARGETARCH}.tar.gz
 
+RUN helm plugin install https://github.com/chartmuseum/helm-push
 
 
 
@@ -31,8 +32,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 # Install helm
 COPY --from=builder /usr/bin/helm /usr/bin/helm
 COPY --from=builder /root/.local/share/helm/plugins/helm-push /root/.local/share/helm/plugins/
-
-#RUN helm plugin install https://github.com/chartmuseum/helm-push
 
 # Clean up
 RUN apk del --purge curl git wget gettext
