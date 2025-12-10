@@ -30,8 +30,9 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Install helm
 COPY --from=builder /usr/bin/helm /usr/bin/helm
+COPY --from=builder ~/.local/share/helm/plugins/helm-push ~/.local/share/helm/plugins/
 
-RUN helm plugin install https://github.com/chartmuseum/helm-push
+#RUN helm plugin install https://github.com/chartmuseum/helm-push
 
 # Clean up
 RUN apk del --purge curl git wget gettext
