@@ -33,8 +33,5 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 COPY --from=builder /usr/bin/helm /usr/bin/helm
 COPY --from=builder /root/.local/share/helm/plugins/helm-push /root/.local/share/helm/plugins/
 
-# Clean up
-RUN apk del --purge curl git wget gettext
-
 ENTRYPOINT [ "helm" ]
 CMD ["--help"]
